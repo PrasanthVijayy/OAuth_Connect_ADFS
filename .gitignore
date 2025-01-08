@@ -1,3 +1,13 @@
 .env
+
 node_modules
+
 pnpm-lock.yaml
+
+logs
+
+package-lock.json
+
+expressjs-ldap-api*
+
+Certificates

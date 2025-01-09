@@ -1,3 +1,4 @@
+"use strict";
 import express from "express";
 import passport from "passport";
 import OAuth2Strategy from "passport-oauth2";
@@ -51,9 +52,7 @@ passport.use(
       scope: ["email", "profile"],
     },
     async (accessToken, refreshToken, profile, done) => {
-      logger.success(
-        `OAuth Response: ${JSON.stringify(accessToken, refreshToken, profile)}`
-      );
+      logger.success(`OAuth Response: ${JSON.stringify(accessToken)}`);
 
       if (accessToken) {
         const decodeData = jwt.decode(accessToken);
@@ -66,7 +65,6 @@ passport.use(
       }
 
       const user = { accessToken, profile };
-      console.log("user", user);
       return done(null, user);
     }
   )
@@ -86,7 +84,7 @@ passport.deserializeUser((accessToken, done) => {
 });
 
 // Define routes for OAuth login and callback
-app.get("/auth", passport.authenticate("oauth2"));
+app.get("/", passport.authenticate("oauth2"));
 
 app.get(
   "/OAuth/callback",
@@ -98,12 +96,26 @@ app.get(
 
 // Secure route example: Dashboard
 app.get("/dashboard", (req, res) => {
-  if (!req.user) {
-    return res.redirect("/auth");
+  if (!req.user || !req.user.accessToken) {
+    return res.redirect("/");
   }
-  logger.success(`User: ${JSON.stringify(req.user, null, 2)}`);
+  console.log("User:", req.user);
   const name = req.user?.accessToken?.profile?.name;
-  res.send(`Hello ${name || "new user"}, welcome to your dashboard.`);
+  const email = req.user?.accessToken?.profile?.email;
+  res.send(
+    `Welcome to your dashboard!
+    <br/>Username: ${name} <br/> Email: ${email}
+    <br/><a href="/logout">Logout</a></div>`
+  );
+});
+
+app.get("/logout", (req, res) => {
+  req.logout((err) => {
+    if (err) {
+      return next(err);
+    }
+    res.redirect(OAuthConfig?.logoutURL);
+  });
 });
 
 /* ------------ SERVER START ------------ */

@@ -1,3 +1,4 @@
+"use strict"; 
 import { createLogger, format, transports } from "winston";
 import DailyRotateFile from "winston-daily-rotate-file"; // Import the daily rotate transport
 const { combine, timestamp, printf, colorize, errors } = format;

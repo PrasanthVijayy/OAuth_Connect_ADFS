@@ -10,5 +10,3 @@ export const OAuthConfig = {
   callbackURL: `${process.env.APP_LOGIN_URL}:${process.env.PORT}/OAuth/callback`,
   logoutURL: `${process.env.LOGOUT_URL}`,
 };
-
-console.log("CB", OAuthConfig?.callbackURL);
